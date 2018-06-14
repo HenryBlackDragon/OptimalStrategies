@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Strategy {
     private int k = 2;
-    private int countQS = 4;
+    private int countQS = 3;
 
     private int r;
     private float[] mu;
@@ -44,7 +44,11 @@ public class Strategy {
         return time;
     }
 
-    Strategy() {
+    public List<String> getStrategy() {
+        return strategy;
+    }
+
+    public Strategy() {
     }
 
     Strategy(float[] mu, double[][] matrixP, int[][] matrixR, int r) {
@@ -53,6 +57,22 @@ public class Strategy {
         this.matrixR = matrixR;
         this.r = r;
     }
+
+    //TODO: TEST!!!
+    private List<String> state(int k) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i <= k; i++) {
+            for (int j = 0; j <= k; j++) {
+                for (int l = 0; l <= k; l++) {
+                    if (i + j + l == k)
+                        list.add(i + "," + j + "," + l);
+                }
+            }
+        }
+
+        return list;
+    }
+
 
 //    // метод находит все возможные состояния
 //    private List<String> state(int k) {
@@ -77,22 +97,22 @@ public class Strategy {
 //        return list;
 //    }
 
-    // метод находит все возможные состояния
-    private List<String> state(int k) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i <= k; i++) {
-            for (int j = 0; j <= k; j++) {
-                for (int l = 0; l <= k; l++) {
-                    for (int m = 0; m <= k; m++) {
-                        if (i + j + l + m == k)
-                            list.add(i + "," + j + "," + l + "," + m);
-                    }
-                }
-            }
-        }
-
-        return list;
-    }
+//    // метод находит все возможные состояния
+//    private List<String> state(int k) {
+//        List<String> list = new ArrayList<>();
+//        for (int i = 0; i <= k; i++) {
+//            for (int j = 0; j <= k; j++) {
+//                for (int l = 0; l <= k; l++) {
+//                    for (int m = 0; m <= k; m++) {
+//                        if (i + j + l + m == k)
+//                            list.add(i + "," + j + "," + l + "," + m);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return list;
+//    }
 
     // заносит состояния в колекцию HashMap
     private Map<Integer, String> toMap(List<String> list) {
