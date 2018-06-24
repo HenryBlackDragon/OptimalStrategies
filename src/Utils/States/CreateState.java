@@ -27,37 +27,20 @@ public class CreateState {
     }
 
     // метод находит все возможные состояния
-    private List<String> state(int k) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i <= k; i++) {
-            for (int j = 0; j <= k; j++) {
-                for (int l = 0; l <= k; l++) {
-                    for (int m = 0; m <= k; m++) {
-                        for (int n = 0; n <= k; n++) {
-                            for (int o = 0; o <= k; o++) {
-                                for (int p = 0; p <= k; p++) {
-                                    if (i + j + l + m + n + o + p == k)
-                                        list.add(i + "," + j + "," + l + "," + m + "," + n + "," + o + "," + p);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return list;
-    }
-
-//    // метод находит все возможные состояния для метода Ховарда
 //    private List<String> state(int k) {
 //        List<String> list = new ArrayList<>();
 //        for (int i = 0; i <= k; i++) {
 //            for (int j = 0; j <= k; j++) {
 //                for (int l = 0; l <= k; l++) {
 //                    for (int m = 0; m <= k; m++) {
-//                        if (i + j + l + m == k)
-//                            list.add(i + "," + j + "," + l + "," + m);
+//                        for (int n = 0; n <= k; n++) {
+//                            for (int o = 0; o <= k; o++) {
+//                                for (int p = 0; p <= k; p++) {
+//                                    if (i + j + l + m + n + o + p == k)
+//                                        list.add(i + "," + j + "," + l + "," + m + "," + n + "," + o + "," + p);
+//                                }
+//                            }
+//                        }
 //                    }
 //                }
 //            }
@@ -65,4 +48,21 @@ public class CreateState {
 //
 //        return list;
 //    }
+
+//    // метод находит все возможные состояния для метода Ховарда
+    private List<String> state(int k) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i <= k; i++) {
+            for (int j = 0; j <= k; j++) {
+                for (int l = 0; l <= k; l++) {
+                    for (int m = 0; m <= k; m++) {
+                        if (i + j + l + m == k)
+                            list.add(i + "," + j + "," + l + "," + m);
+                    }
+                }
+            }
+        }
+
+        return list;
+    }
 }

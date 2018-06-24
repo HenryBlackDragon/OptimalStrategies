@@ -22,7 +22,7 @@ public class FullSearch {
 
     private float[][] createVectorV(CreateMatrixAVectorQ numStrategy, float[][] oldVectorV) {
         float[][] vectorV = new float[state.getCountState()][1];
-        float[][] vectorMult = MatrixUtil.matrixMultiplay(numStrategy.getMatrixA(), oldVectorV);
+        float[][] vectorMult = MatrixUtil.matrixMultiply(numStrategy.getMatrixA(), oldVectorV);
 
         for (int i = 0; i < state.getCountState(); i++) {
             vectorV[i][0] = numStrategy.getVectorQ()[i][0] + vectorMult[i][0];
