@@ -1,8 +1,7 @@
 package Utils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OtherUtilClass {
 
@@ -12,4 +11,6 @@ public class OtherUtilClass {
 
         return list.indexOf(Collections.max(list)) + 1;
     }
+
+
 }

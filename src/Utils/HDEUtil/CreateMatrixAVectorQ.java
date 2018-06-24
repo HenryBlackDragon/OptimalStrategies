@@ -1,69 +1,99 @@
 package Utils.HDEUtil;
 
-import Diplom.Strategy;
+import Utils.States.CreateState;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateHDE {
-
+public class CreateMatrixAVectorQ {
     private int countQS;
-    private int state;
     private float[][] matrixP;
     private float[][] matrixR;
     private float[] mu;
-    private Strategy strategy;
 
+    private List<String> states;
     private List<String> listI;
 
-    public CreateHDE(int countQS, int state, float[][] matrixP, float[][] matrixR, float[] mu) {
+    private float[][] matrixA;
+    private float[][] vectorQ;
+
+    public CreateMatrixAVectorQ(int countQS, List<String> states, float[][] matrixP, float[][] matrixR, float[] mu, int r) {
         this.countQS = countQS;
-        this.state = state;
         this.matrixP = matrixP;
         this.matrixR = matrixR;
         this.mu = mu;
+        this.states = states;
 
         listI = createListI();
-        strategy = new Strategy();
+        matrixA = new float[states.size()][states.size()];
+        vectorQ = new float[states.size()][1];
+
+        setVectorQ(r);
+        createMatrixAandVectorQ();
     }
 
     // create first element of HDE
-    private String firstElem(String state, int numState) {
+    private void firstElem(String state, int numState) {
         float elementFirst = 0;
 
         for (int i = 0; i < countQS; i++) {
             elementFirst += mu[i] * heaviside(state, i);
         }
 
-        return "(" + String.valueOf(numState) + ")" + elementFirst;
+        matrixA[numState][numState] += (-1) * elementFirst;
     }
 
     // create second element of HDE
-    private String secondElem(String state) {
+    private void secondElem(String state, int numState) {
         float elementSecondPart1 = 0;
         float elementSecondPart2;
-        String resultPart2;
-        StringBuilder builder = new StringBuilder();
 
         if (heaviside(state, countQS - 1) > 0) {
             for (int i = 0; i < countQS - 1; i++) {
                 elementSecondPart1 += mu[countQS - 1] * matrixP[countQS - 1][i] * matrixR[countQS - 1][i];
             }
 
+            vectorQ[numState][0] += elementSecondPart1;
+
             for (int i = 0; i < countQS - 1; i++) {
                 elementSecondPart2 = mu[countQS - 1] * matrixP[countQS - 1][i];
-                resultPart2 = elementSecondPart2 + "(" + findNumState(state, getI(countQS - 1), getI(i)) + ")";
+                matrixA[numState][findNumState(state, getI(countQS - 1), getI(i))] += elementSecondPart2;
+            }
+        }
+    }
 
-                if (i != countQS - 2) {
-                    builder.append(resultPart2).append("+");
-                } else {
-                    builder.append(resultPart2);
+    // create third element of HDE
+    private void thirdElem(String state, int numState) {
+        float elementThirdPart1 = 0;
+        float elementThirdPart2;
+
+        for (int i = 0; i < countQS - 1; i++) {
+            if (heaviside(state, i) > 0) {
+                elementThirdPart1 += mu[i] * (-1) * matrixR[i][countQS - 1];
+            }
+        }
+
+        vectorQ[numState][0] += elementThirdPart1;
+
+        for (int i = 0; i < countQS - 1; i++) {
+            if (heaviside(state, i) > 0) {
+                elementThirdPart2 = mu[i];
+                matrixA[numState][findNumState(state, getI(i), getI(countQS - 1))] += elementThirdPart2;
+            }
+        }
+    }
+
+    // create fourth element of HDE
+    private void fourthElem(String state, int numState) {
+        float fourthElem;
+
+        for (int i = 0; i < countQS - 1; i++) {
+            for (int j = 0; j < countQS - 1; j++) {
+                if (heaviside(state, i) > 0) {
+                    fourthElem = mu[i] * matrixP[i][j];
+                    matrixA[numState][findNumState(state, getI(i), getI(j))] += fourthElem;
                 }
             }
-
-            return elementSecondPart1 + "+" + builder.toString();
-        } else {
-            return "";
         }
     }
 
@@ -84,7 +114,7 @@ public class CreateHDE {
             }
         }
 
-        return strategy.getStrategy().indexOf(builder.toString());
+        return states.indexOf(builder.toString());
     }
 
     // function Heaviside, return 1 ore 0
@@ -135,19 +165,54 @@ public class CreateHDE {
         return listI;
     }
 
+    // create matrix A and vector Q
+    private void createMatrixAandVectorQ() {
+        for (int i = 0; i < states.size(); i++) {
+            firstElem(states.get(i), i);
+            secondElem(states.get(i), i);
+            thirdElem(states.get(i), i);
+            fourthElem(states.get(i), i);
+        }
+    }
+
+    public float[][] getMatrixA() {
+        return matrixA;
+    }
+
+    public float[][] getVectorQ() {
+        return vectorQ;
+    }
+
+    private void setVectorQ(int r) {
+        for (int i = 0; i < vectorQ.length; i++) {
+            vectorQ[i][0] = r;
+        }
+    }
+
     private String getI(int num) {
         return listI.get(num);
     }
 
     public static void main(String[] args) {
-
         float[][] matrixP = new float[][]{{0, 0, 1f}, {0, 0, 1f}, {0.5f, 0.5f, 0}};
         float[][] matrixR = new float[][]{{0, 0, 1f}, {0, 0, 1f}, {1f, 2f, 0}};
         float[] mu = new float[]{1f, 1f, 1f};
 
-        CreateHDE createHDE = new CreateHDE(3, 2, matrixP, matrixR, mu);
+        CreateState state = new CreateState(2);
 
-        System.out.println(createHDE.secondElem("0,0,2"));
+        CreateMatrixAVectorQ createHDE = new CreateMatrixAVectorQ(3,
+                state.getStrategy(), matrixP, matrixR, mu, 3);
 
+
+        for (int i = 0; i < state.getStrategy().size(); i++) {
+            for (int j = 0; j < state.getStrategy().size(); j++) {
+                System.out.print(createHDE.getMatrixA()[i][j] + " ");
+            }
+            System.out.println();
+        }
+
+        for (int i = 0; i < state.getStrategy().size(); i++) {
+            System.out.println(createHDE.getVectorQ()[i][0]);
+        }
     }
 }
